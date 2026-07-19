@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>دفتر المتجر</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="icon" href="icons/icon48.png" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- الشريط الجانبي -->
+  <nav class="sidebar">
+    <div class="brand">
+      <img src="icons/icon48.png" alt="" class="brand-mark" />
+      <div class="brand-text">
+        <strong>دفتر المتجر</strong>
+        <span>مكتبة وإعلام آلي</span>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <button class="nav-btn active" data-view="inventory">
+        <span class="nav-idx">01</span> المخزون
+      </button>
+      <button class="nav-btn" data-view="sales">
+        <span class="nav-idx">02</span> المبيعات
+      </button>
+      <button class="nav-btn" data-view="debts">
+        <span class="nav-idx">03</span> الديون
+      </button>
+      <button class="nav-btn" data-view="reports">
+        <span class="nav-idx">04</span> التقارير
+      </button>
+    </div>
+
+    <div class="sidebar-foot">
+      <span id="today-date"></span>
+    </div>
+  </nav>
+
+  <!-- المحتوى -->
+  <main class="content">
+
+    <!-- ===== المخزون ===== -->
+    <section id="view-inventory" class="view active">
+      <header class="view-head">
+        <div>
+          <h1>المخزون</h1>
+          <p class="sub">كل ما يباع في المتجر: كتب، أدوات مكتبية، ومعدات إعلام آلي</p>
+        </div>
+        <button class="btn btn-primary" id="btn-add-item">+ إضافة منتج</button>
+      </header>
+
+      <div class="toolbar">
+        <input type="text" id="inv-search" placeholder="ابحث باسم المنتج..." class="input" />
+        <select id="inv-filter-cat" class="input select">
+          <option value="">كل الفئات</option>
+          <option value="كتب مدرسية">كتب مدرسية</option>
+          <option value="أدوات مكتبية">أدوات مكتبية</option>
+          <option value="معلوماتية">معلوماتية</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+        <label class="check">
+          <input type="checkbox" id="inv-filter-low" />
+          المخزون المنخفض فقط
+        </label>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="inv-table">
+          <thead>
+            <tr>
+              <th>المنتج</th>
+              <th>الفئة</th>
+              <th>سعر الشراء</th>
+              <th>سعر البيع</th>
+              <th>الكمية</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="inv-tbody"></tbody>
+        </table>
+        <p class="empty-state" id="inv-empty" hidden>لا توجد منتجات بعد. اضغط "+ إضافة منتج" للبدء.</p>
+      </div>
+    </section>
+
+    <!-- ===== المبيعات ===== -->
+    <section id="view-sales" class="view">
+      <header class="view-head">
+        <div>
+          <h1>المبيعات</h1>
+          <p class="sub">أنشئ عملية بيع جديدة وسجّلها</p>
+        </div>
+      </header>
+
+      <div class="pos-grid">
+        <div class="pos-picker">
+          <input type="text" id="pos-search" placeholder="ابحث عن منتج لإضافته..." class="input" />
+          <div class="pos-results" id="pos-results"></div>
+        </div>
+
+        <div class="receipt">
+          <div class="receipt-head">
+            <span>الوصل</span>
+            <span id="receipt-count">0 عنصر</span>
+          </div>
+          <div class="receipt-body" id="cart-body">
+            <p class="empty-state" id="cart-empty">السلة فارغة. ابحث عن منتج وأضفه.</p>
+          </div>
+          <div class="receipt-total">
+            <span>المجموع</span>
+            <strong id="cart-total">0 دج</strong>
+          </div>
+
+          <div class="pay-type">
+            <label class="radio">
+              <input type="radio" name="pay-type" value="cash" checked />
+              نقدًا
+            </label>
+            <label class="radio">
+              <input type="radio" name="pay-type" value="debt" />
+              دين (آجل)
+            </label>
+          </div>
+
+          <div id="debt-customer-wrap" class="field" hidden>
+            <label>الزبون</label>
+            <select id="debt-customer-select" class="input select">
+              <option value="">اختر زبونًا موجودًا</option>
+            </select>
+            <input type="text" id="debt-customer-new" class="input" placeholder="أو اكتب اسم زبون جديد" />
+          </div>
+
+          <button class="btn btn-primary btn-block" id="btn-checkout">إتمام البيع</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== الديون ===== -->
+    <section id="view-debts" class="view">
+      <header class="view-head">
+        <div>
+          <h1>الديون</h1>
+          <p class="sub">متابعة ديون الزبائن وتسديداتهم</p>
+        </div>
+        <button class="btn btn-primary" id="btn-add-customer">+ إضافة زبون</button>
+      </header>
+
+      <div class="stat-strip">
+        <div class="stat-card rust">
+          <span class="stat-label">إجمالي الديون</span>
+          <strong id="stat-total-debt">0 دج</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">عدد الزبائن المدينين</span>
+          <strong id="stat-debtors-count">0</strong>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="debt-search" placeholder="ابحث باسم الزبون..." class="input" />
+      </div>
+
+      <div class="card-grid" id="debts-grid"></div>
+      <p class="empty-state" id="debts-empty" hidden>لا توجد ديون مسجّلة حاليًا.</p>
+    </section>
+
+    <!-- ===== التقارير ===== -->
+    <section id="view-reports" class="view">
+      <header class="view-head">
+        <div>
+          <h1>التقارير والإحصائيات</h1>
+          <p class="sub">نظرة عامة على أداء المتجر</p>
+        </div>
+      </header>
+
+      <div class="stat-strip">
+        <div class="stat-card sage">
+          <span class="stat-label">مبيعات اليوم</span>
+          <strong id="r-today-sales">0 دج</strong>
+        </div>
+        <div class="stat-card sage">
+          <span class="stat-label">ربح اليوم</span>
+          <strong id="r-today-profit">0 دج</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">مبيعات هذا الشهر</span>
+          <strong id="r-month-sales">0 دج</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">ربح هذا الشهر</span>
+          <strong id="r-month-profit">0 دج</strong>
+        </div>
+        <div class="stat-card rust">
+          <span class="stat-label">ديون مستحقة</span>
+          <strong id="r-total-debt">0 دج</strong>
+        </div>
+        <div class="stat-card mustard">
+          <span class="stat-label">منتجات منخفضة المخزون</span>
+          <strong id="r-low-stock">0</strong>
+        </div>
+      </div>
+
+      <div class="report-cols">
+        <div class="panel">
+          <h2>الأكثر مبيعًا</h2>
+          <div id="top-products" class="bar-list"></div>
+          <p class="empty-state" id="top-empty" hidden>لا توجد مبيعات مسجّلة بعد.</p>
+        </div>
+        <div class="panel">
+          <h2>مخزون منخفض</h2>
+          <div id="low-stock-list" class="bar-list"></div>
+          <p class="empty-state" id="low-empty" hidden>كل المنتجات متوفرة بكمية كافية.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== نافذة إضافة/تعديل منتج ===== -->
+<dialog id="item-modal" class="modal">
+  <form method="dialog" id="item-form" class="modal-form">
+    <h2 id="item-modal-title">إضافة منتج</h2>
+    <input type="hidden" id="item-id" />
+
+    <div class="field">
+      <label>اسم المنتج</label>
+      <input type="text" id="item-name" class="input" required />
+    </div>
+
+    <div class="field">
+      <label>الفئة</label>
+      <select id="item-cat" class="input select">
+        <option value="كتب مدرسية">كتب مدرسية</option>
+        <option value="أدوات مكتبية">أدوات مكتبية</option>
+        <option value="معلوماتية">معلوماتية</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>سعر الشراء (دج)</label>
+        <input type="number" id="item-buy" class="input" min="0" step="0.01" required />
+      </div>
+      <div class="field">
+        <label>سعر البيع (دج)</label>
+        <input type="number" id="item-sell" class="input" min="0" step="0.01" required />
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>الكمية الحالية</label>
+        <input type="number" id="item-qty" class="input" min="0" step="1" required />
+      </div>
+      <div class="field">
+        <label>حد التنبيه (مخزون منخفض)</label>
+        <input type="number" id="item-min" class="input" min="0" step="1" value="3" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btn-delete-item" hidden>حذف المنتج</button>
+      <div class="modal-actions-right">
+        <button type="button" class="btn btn-ghost" id="btn-cancel-item">إلغاء</button>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- ===== نافذة إضافة زبون ===== -->
+<dialog id="customer-modal" class="modal">
+  <form method="dialog" id="customer-form" class="modal-form">
+    <h2>إضافة زبون</h2>
+    <div class="field">
+      <label>اسم الزبون</label>
+      <input type="text" id="cust-name" class="input" required />
+    </div>
+    <div class="field">
+      <label>رقم الهاتف (اختياري)</label>
+      <input type="text" id="cust-phone" class="input" />
+    </div>
+    <div class="modal-actions">
+      <div class="modal-actions-right">
+        <button type="button" class="btn btn-ghost" id="btn-cancel-customer">إلغاء</button>
+        <button type="submit" class="btn btn-primary">حفظ</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<!-- ===== نافذة تسديد دين ===== -->
+<dialog id="payment-modal" class="modal">
+  <form method="dialog" id="payment-form" class="modal-form">
+    <h2>تسديد دين</h2>
+    <p class="sub" id="payment-customer-name"></p>
+    <div class="field">
+      <label>المبلغ المسدَّد (دج)</label>
+      <input type="number" id="payment-amount" class="input" min="0" step="0.01" required />
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-ghost" id="btn-delete-customer">حذف الزبون</button>
+      <div class="modal-actions-right">
+        <button type="button" class="btn btn-ghost" id="btn-cancel-payment">إلغاء</button>
+        <button type="submit" class="btn btn-primary">تسجيل التسديد</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
